@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+
+# Virtual Environment
+venv/
+
+# Test Cache
+.pytest_cache/
+
+# IDE Configurations
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Coverage Reports
+.coverage
+htmlcov/
+
+# Build Files
+dist/
+build/
+*.egg-info/
+
+# Temporary Files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Generated Files
+*.csv
+*.json
+*.xml
