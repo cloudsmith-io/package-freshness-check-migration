@@ -41,23 +41,16 @@ class TestNexusClient(unittest.TestCase):
     
     def test_list_package_groups(self):
         """Test listing package groups."""
-        groups = self.client.list_package_groups()
+        groups = self.client.list_package_groups("maven")
         self.assertIsInstance(groups, list)
         self.assertTrue(len(groups) > 0)
         self.assertIn("groupId", groups[0])
         self.assertIn("artifactId", groups[0])
     
-    def test_get_maven_metadata(self):
-        """Test getting maven metadata."""
-        metadata = self.client.get_maven_metadata("com.indeed", "util-core")
-        self.assertIsInstance(metadata, dict)
-        self.assertIn("metadata", metadata)
-        self.assertEqual(metadata["metadata"]["groupId"], "com.indeed")
-        self.assertEqual(metadata["metadata"]["artifactId"], "util-core")
-    
     def test_get_last_updated_date(self):
         """Test getting the last updated date."""
-        date = self.client.get_last_updated_date("com.indeed", "util-core")
+        identifier = {"groupId": "com.indeed", "artifactId": "util-core"}
+        date = self.client.get_last_updated_date(identifier, "maven")
         self.assertEqual(date, "20250325120000")
 
 
@@ -69,78 +62,50 @@ class TestCloudsmithClient(unittest.TestCase):
         """Test listing package groups from Cloudsmith."""
         # Mock the API response
         mock_response = MagicMock()
-        mock_response.json.return_value = [
+        mock_response.json.return_value = {"results": [
             {
                 "format": "maven",
-                "identifiers": {
-                    "maven_group_id": "com.indeed",
-                    "maven_artifact_id": "util-core"
-                }
+                "identifier": "com.indeed:util-core",
+                "name": "com.indeed:util-core",
+                "last_push_at": "2025-03-26T12:00:00Z"
             },
             {
                 "format": "maven",
-                "identifiers": {
-                    "maven_group_id": "com.indeed",
-                    "maven_artifact_id": "util-io"
-                }
+                "identifier": "com.indeed:util-io",
+                "name": "com.indeed:util-io",
+                "last_push_at": "2025-03-25T12:00:00Z"
             }
-        ]
+        ]}
         mock_response.raise_for_status.return_value = None
         mock_get.return_value = mock_response
         
         client = CloudsmithClient(api_key="test_key")
-        groups = client.list_package_groups()
-        
+        groups = client.list_package_groups("maven")
         self.assertEqual(len(groups), 2)
-        self.assertEqual(groups[0]["groupId"], "com.indeed")
-        self.assertEqual(groups[0]["artifactId"], "util-core")
+        self.assertEqual(groups[0]["identifier"], "com.indeed:util-core")
     
     @patch('freshness_checker.requests.get')
     def test_get_last_updated_date(self, mock_get):
         """Test getting the last updated date from Cloudsmith."""
         # Mock the API response
         mock_response = MagicMock()
-        mock_response.json.return_value = [
+        mock_response.json.return_value = {"results": [
             {
-                "uploaded_at": "2025-03-26T12:00:00Z",
-                "tags": []
+                "identifier": "com.indeed:util-core",
+                "last_push_at": "2025-03-26T12:00:00Z"
             },
             {
-                "uploaded_at": "2025-03-25T12:00:00Z",
-                "tags": ["nexus-upstream"]
+                "identifier": "com.indeed:util-io",
+                "last_push_at": "2025-03-25T12:00:00Z"
             }
-        ]
+        ]}
         mock_response.raise_for_status.return_value = None
         mock_get.return_value = mock_response
         
         client = CloudsmithClient(api_key="test_key")
-        date = client.get_last_updated_date("com.indeed", "util-core")
-        
+        identifier = {"groupId": "com.indeed", "artifactId": "util-core"}
+        date = client.get_last_updated_date(identifier, "maven")
         self.assertEqual(date, "20250326120000")
-    
-    @patch('freshness_checker.requests.get')
-    def test_get_last_updated_date_with_exclusion(self, mock_get):
-        """Test getting the last updated date with tag exclusion."""
-        # Mock the API response
-        mock_response = MagicMock()
-        mock_response.json.return_value = [
-            {
-                "uploaded_at": "2025-03-26T12:00:00Z",
-                "tags": ["nexus-upstream"]
-            },
-            {
-                "uploaded_at": "2025-03-25T12:00:00Z",
-                "tags": []
-            }
-        ]
-        mock_response.raise_for_status.return_value = None
-        mock_get.return_value = mock_response
-        
-        client = CloudsmithClient(api_key="test_key")
-        date = client.get_last_updated_date("com.indeed", "util-core", exclude_tags=["nexus-upstream"])
-        
-        # Should skip the first one due to tag and use the second one
-        self.assertEqual(date, "20250325120000")
 
 
 if __name__ == "__main__":

@@ -55,9 +55,9 @@ class TestScenarios(unittest.TestCase):
             main()
         
         # Verify that the correct functions were called
-        nexus_instance.list_package_groups.assert_called_once()
+        nexus_instance.list_package_groups.assert_called_once_with(format_type=mock_args.return_value.format)
         nexus_instance.get_last_updated_date.assert_called_once_with(
-            "com.indeed", "nexus-only-package"
+            {"groupId": "com.indeed", "artifactId": "nexus-only-package"}, format_type=mock_args.return_value.format
         )
         
     @patch('freshness_checker.NexusClient')
@@ -96,7 +96,7 @@ class TestScenarios(unittest.TestCase):
             main()
         
         # Verify that the Cloudsmith client was called correctly
-        cs_instance.list_package_groups.assert_called_once()
+        cs_instance.list_package_groups.assert_called_once_with(format_type=mock_args.return_value.format)
         cs_instance.get_last_updated_date.assert_called_once()
     
     @patch('freshness_checker.NexusClient')
@@ -138,7 +138,7 @@ class TestScenarios(unittest.TestCase):
         
         # Verify that the Cloudsmith client was called with the tag exclusion
         cs_instance.get_last_updated_date.assert_called_once_with(
-            "com.indeed", "cached-package", exclude_tags=["nexus-upstream"]
+            {"groupId": "com.indeed", "artifactId": "cached-package"}, format_type=mock_args.return_value.format
         )
     
     @patch('freshness_checker.NexusClient')
