@@ -135,7 +135,7 @@ class CloudsmithClient:
         self.repo = repo
         self.mock = mock
 
-    def list_package_groups(self, format_type: str) -> List[Dict]:
+    def list_package_groups(self, format_type: str, ignore_tag: str | None = None) -> List[Dict]:
         """
         Get all package groups from Cloudsmith.
         
@@ -149,8 +149,7 @@ class CloudsmithClient:
         params = {
             "page": 1,
             "page_size": 100,
-            # TODO:
-            "query": f"format:{format_type} AND NOT tag:upstream",
+            "query": f"format:{format_type} AND NOT tag:{ignore_tag}",
             "sort": "-last_push"
         }
 
@@ -223,7 +222,6 @@ class CloudsmithClient:
             "Accept": "application/json"
         }
         
-        logger.info(f"Making request to Cloudsmith API: {url}")
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
         return response.json()
@@ -292,7 +290,6 @@ def main():
                       help='Package format to check (default: maven)')
     parser.add_argument('--upstream-tag-to-exclude', default='upstream',
                       help='Tag to use for excluding packages from Cloudsmith fetch')
-    parser.add_argument('--output-csv', help='Output results to CSV file')
     args = parser.parse_args()
     
     formats_to_check = [args.format] if args.format != 'all' else ['maven', 'npm', 'python']
@@ -300,7 +297,7 @@ def main():
 
     nexus_client = NexusClient()
     cloudsmith_client = CloudsmithClient()
-    
+
     for format_type in formats_to_check:
         logger.info(f"Starting freshness check for {format_type} packages")
         
@@ -349,25 +346,6 @@ def main():
             print(f"  Freshness date: {format_date_for_display(freshness_date)} (from {date_source})")
             print()
         
-    
-    # Output to CSV if requested
-    if args.output_csv:
-        try:
-            import csv
-            with open(args.output_csv, 'w', newline='') as f:
-                if not results:
-                    logger.warning("No results to write to CSV")
-                    return
-                
-                fieldnames = ['format', 'name', 'nexus_date', 'cloudsmith_date', 'freshness_date', 'source']
-                    
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(results)
-            logger.info(f"Results written to {args.output_csv}")
-        except Exception as e:
-            logger.error(f"Failed to write CSV: {e}")
-    
     # Step 5: Log results
     logger.info("Step 5: Logging results summary")
     

@@ -21,7 +21,7 @@ python examples/usage_example.py
 # Run the main script with some options
 echo ""
 echo "Running the full package freshness checker..."
-python freshness_checker.py --output-csv freshness_results.csv
+python freshness_checker.py
 
 # Deactivate the virtual environment
 deactivate
