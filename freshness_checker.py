@@ -340,21 +340,24 @@ def main():
             })
             
             # Print details
-            print(f"Package: {pkg_name}")
-            print(f"  Nexus date: {format_date_for_display(nexus_date)}")
-            print(f"  Cloudsmith date: {format_date_for_display(cloudsmith_date)}")
-            print(f"  Freshness date: {format_date_for_display(freshness_date)} (from {date_source})")
-            print()
+            logger.info(f"Package: {pkg_name}")
+            logger.info(f"  Nexus date: {format_date_for_display(nexus_date)}")
+            logger.info(f"  Cloudsmith date: {format_date_for_display(cloudsmith_date)}")
+            logger.info(f"  Freshness date: {format_date_for_display(freshness_date)} (from {date_source})")
+            logger.info("")
         
     # Step 5: Log results
     logger.info("Step 5: Logging results summary")
     
     # Print summary
-    print("\nSummary:")
-    print(f"Total packages: {len(results)}")
-    print(f"Using Nexus date: {sum(1 for r in results if r['source'] == 'nexus')}")
-    print(f"Using Cloudsmith date: {sum(1 for r in results if r['source'] == 'cloudsmith')}")
-    print(f"Missing date: {sum(1 for r in results if r['source'] == 'unknown')}")
+    logger.info("")
+    logger.info("-" * 40)
+    logger.info("Summary:")
+    logger.info("-" * 40)
+    logger.info(f"Total packages: {len(results)}")
+    logger.info(f"Using Nexus date: {sum(1 for r in results if r['source'] == 'nexus')}")
+    logger.info(f"Using Cloudsmith date: {sum(1 for r in results if r['source'] == 'cloudsmith')}")
+    logger.info(f"Missing date: {sum(1 for r in results if r['source'] == 'unknown')}")
 
 
 if __name__ == "__main__":
