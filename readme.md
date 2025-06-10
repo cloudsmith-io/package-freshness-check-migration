@@ -1,6 +1,6 @@
 # Indeed Package Freshness Checker
 
-This example script helps Indeed track the freshness of packages (Maven, NPM, Python) during migration from Nexus to Cloudsmith. It addresses the concern that during migration, the `uploadDate` of packages cached from upstream might be set to the current date, which would override the actual upload date from the upstream and falsely report that packages are "fresher" than they should be.
+`./freshness_checker.py` example script helps Indeed track the freshness of packages (Maven, NPM, Python) during migration from Nexus to Cloudsmith. It addresses the concern that during migration, the `uploadDate` of packages cached from upstream might be set to the current date, which would override the actual upload date from the upstream and falsely report that packages are "fresher" than they should be.
 
 * Discussion docs https://www.notion.so/cloudsmith/Indeed-Package-freshness-investigation-1c130529295480f9abc7e4c76d6aef9f
 * Flow diagram explaining scenarios https://app.excalidraw.com/s/7aJ5mIbtXrP/8qSC4ceSRjE
