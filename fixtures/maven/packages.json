@@ -1,0 +1,12 @@
+[
+  {
+    "groupId": "com.indeed",
+    "artifactId": "cached-package",
+    "lastUpdated": "20250202000000"
+  },
+  {
+    "groupId": "com.google.guava",
+    "artifactId": "guava",
+    "lastUpdated": "20250202000000"
+  }
+]

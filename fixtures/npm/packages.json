@@ -1,0 +1,22 @@
+[
+  {
+    "name": "@indeed/frontend-ui",
+    "lastUpdated": "20250405102030"
+  },
+  {
+    "name": "@indeed/search-components",
+    "lastUpdated": "20250322081234"
+  },
+  {
+    "name": "@example/test-lib",
+    "lastUpdated": "20250328131415"
+  },
+  {
+    "name": "indeed-logger",
+    "lastUpdated": "20250310221823"
+  },
+  {
+    "name": "accepts",
+    "lastUpdated": "20250301000000"
+  }
+]

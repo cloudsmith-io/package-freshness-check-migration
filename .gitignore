@@ -39,5 +39,4 @@ build/
 
 # Generated Files
 *.csv
-*.json
 *.xml
