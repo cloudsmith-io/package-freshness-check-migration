@@ -1,6 +1,2 @@
 requests
 python-dotenv
-xmltodict
-pytest
-mock
-colorama
