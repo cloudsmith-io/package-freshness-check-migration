@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Indeed Package Freshness Checker
+Customer Package Freshness Checker
 
-This script helps Indeed track the freshness of packages during migration
+This script helps Customer track the freshness of packages during migration
 from Nexus to Cloudsmith by comparing upload dates from both sources and determining
 the correct freshness date for each package group.
 """
@@ -31,7 +31,7 @@ load_dotenv()
 # Environment variables
 CLOUDSMITH_BASE_URL = os.getenv("CLOUDSMITH_BASE_URL", "https://api.cloudsmith.io")
 CLOUDSMITH_API_KEY = os.getenv("CLOUDSMITH_API_KEY")
-CLOUDSMITH_ORG = os.getenv("CLOUDSMITH_ORG", "indeed")
+CLOUDSMITH_ORG = os.getenv("CLOUDSMITH_ORG", "customer-org")
 CLOUDSMITH_REPO = os.getenv("CLOUDSMITH_REPO", "maven-repo")
 
 # Constants

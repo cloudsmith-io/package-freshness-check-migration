@@ -1,10 +1,10 @@
 [
   {
-    "name": "@indeed/frontend-ui",
+    "name": "@customer/frontend-ui",
     "lastUpdated": "20250405102030"
   },
   {
-    "name": "@indeed/search-components",
+    "name": "@customer/search-components",
     "lastUpdated": "20250322081234"
   },
   {
@@ -12,7 +12,7 @@
     "lastUpdated": "20250328131415"
   },
   {
-    "name": "indeed-logger",
+    "name": "customer-logger",
     "lastUpdated": "20250310221823"
   },
   {

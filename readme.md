@@ -1,8 +1,7 @@
-# Indeed Package Freshness Checker
+# Customer Package Freshness Checker
 
-`./freshness_checker.py` example script helps Indeed track the freshness of packages (Maven, NPM, Python) during migration from Nexus to Cloudsmith. It addresses the concern that during migration, the `uploadDate` of packages cached from upstream might be set to the current date, which would override the actual upload date from the upstream and falsely report that packages are "fresher" than they should be.
+`./freshness_checker.py` example script helps Customer track the freshness of packages (Maven, NPM, Python) during migration from Nexus to Cloudsmith. It addresses the concern that during migration, the `uploadDate` of packages cached from upstream might be set to the current date, which would override the actual upload date from the upstream and falsely report that packages are "fresher" than they should be.
 
-* Discussion docs https://www.notion.so/cloudsmith/Indeed-Package-freshness-investigation-1c130529295480f9abc7e4c76d6aef9f
 * Flow diagram explaining scenarios https://app.excalidraw.com/s/7aJ5mIbtXrP/8qSC4ceSRjE
 
 ## Problem Statement
@@ -10,8 +9,8 @@
 During migration to Cloudsmith, Packages cached in Cloudsmith from Nexus upstream will override publish date, resulting in the incorrect package freshness dates, indicating that the packages in Cloudsmith cached from Nexus are built more recently than they trully are
 
 The solution implemented here allows for proper tracking of package freshness by:
-1. Querying Nexus for all versionless packages (Indeed does this in the current package freshness check)
-2. Querying Nexus for `uploadDate` for a versionless package (Indeed does this in the current package freshness check)
+1. Querying Nexus for all versionless packages (Customer does this in the current package freshness check)
+2. Querying Nexus for `uploadDate` for a versionless package (Customer does this in the current package freshness check)
 3. Querying Cloudsmith for `uploadDate` for the same versionless package EXCLUDING package versions cached from the Nexus (using `NOT tag:nexus-upstream`). This will return `uploadDate` of a packages only pushed to Cloudsmith (e.g. `uploadDate` represents correct build date for a package)
 4. Taking the later of the two dates from Nexus and Cloudsmith as the true freshness date for a package group (versionless package)
 
@@ -71,7 +70,7 @@ The `NexusClient` class provides functionality to:
 - List all package groups in Nexus (supports Maven, NPM, and Python as per the script's capabilities).
 - Retrieve the `lastUpdated` date for each package group (e.g., from `maven-metadata.xml` for Maven packages).
 
-Data from `NexusClient` is mocked in `./fixtures/{format}/packages.json`. This is a showcase implementation. In a production implementation, Indeed would replace it by existing script that parses the HTML index
+Data from `NexusClient` is mocked in `./fixtures/{format}/packages.json`. This is a showcase implementation. In a production implementation, Customer would replace it by existing script that parses the HTML index
 
 ### Cloudsmith Client
 
