@@ -7,12 +7,12 @@ This example script helps Indeed track the freshness of packages (Maven, NPM, Py
 
 ## Problem Statement
 
-During migration to Cloudsmith, Packages cached in Cloudsmith from Nexus upstream will override publish date, resulting to the incorrect package freshness dates.
+During migration to Cloudsmith, Packages cached in Cloudsmith from Nexus upstream will override publish date, resulting the incorrect package freshness dates.
 
 The solution implemented here allows for proper tracking of package freshness by:
 - Querying both Nexus and Cloudsmith for package information
 - Excluding packages in Cloudsmith with upstream tag (e.g., "nexus-upstream") from freshness calculation, ensuring that only non-nexus packages are taken into account
-- Taking the later of the two dates from Nexus and Cloudsmith as the true freshness date
+- Taking the later of the two dates from Nexus and Cloudsmith as the true freshness date for a package group (versionless package)
 
 ## Setup
 
