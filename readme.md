@@ -1,20 +1,17 @@
 # Indeed Package Freshness Checker
 
-This tool helps Indeed track the freshness of packages (Maven, NPM, Python) during migration from Nexus to Cloudsmith. It addresses the concern that during migration, the `uploadDate` of packages cached from upstream might be set to the current date, which would override the actual upload date from the upstream and falsely report that packages are "fresher" than they should be.
+This example script helps Indeed track the freshness of packages (Maven, NPM, Python) during migration from Nexus to Cloudsmith. It addresses the concern that during migration, the `uploadDate` of packages cached from upstream might be set to the current date, which would override the actual upload date from the upstream and falsely report that packages are "fresher" than they should be.
+
+* Discussion docs https://www.notion.so/cloudsmith/Indeed-Package-freshness-investigation-1c130529295480f9abc7e4c76d6aef9f
+* Flow diagram explaining scenarios https://app.excalidraw.com/s/7aJ5mIbtXrP/8qSC4ceSRjE
 
 ## Problem Statement
 
-During migration to Cloudsmith, there are several scenarios where package freshness dates might be incorrectly reported:
-
-1. Package exists only in Nexus (not yet cached in Cloudsmith)
-2. Package exists only in Cloudsmith (newly uploaded)
-3. Package is cached in Cloudsmith from Nexus upstream
-4. Package exists in both Cloudsmith (local) and Nexus, with local being newer
-5. Package exists in both Cloudsmith (local) and Nexus, with Nexus being newer
+During migration to Cloudsmith, Packages cached in Cloudsmith from Nexus upstream will override publish date, resulting to the incorrect package freshness dates.
 
 The solution implemented here allows for proper tracking of package freshness by:
 - Querying both Nexus and Cloudsmith for package information
-- Excluding packages with specific tags (e.g., "nexus-upstream") from freshness calculation
+- Excluding packages in Cloudsmith with upstream tag (e.g., "nexus-upstream") from freshness calculation, ensuring that only non-nexus packages are taken into account
 - Taking the later of the two dates from Nexus and Cloudsmith as the true freshness date
 
 ## Setup
@@ -43,17 +40,8 @@ The solution implemented here allows for proper tracking of package freshness by
 # Check all packages from both Nexus and Cloudsmith
 python freshness_checker.py
 
-# Check only packages in Nexus
-python freshness_checker.py --nexus-only
-
-# Check only packages in Cloudsmith
-python freshness_checker.py --cloudsmith-only
-
-# Specify tags to exclude (default is "nexus-upstream")
-python freshness_checker.py --exclude-tag nexus-upstream --exclude-tag another-tag
-
-# Output results to CSV
-python freshness_checker.py --output-csv results.csv
+# Specify tags to exclude (default is "upstream")
+python freshness_checker.py --upstream-tag-to-exclude nexus-upstream
 ```
 
 ### Quick Demo
@@ -70,51 +58,6 @@ This will:
 3. Run the example code
 4. Run the main freshness checker
 
-## Examples
-
-The `examples` directory contains sample scripts demonstrating different aspects of the freshness checker:
-
-### Basic Usage Example
-
-```bash
-python examples/usage_example.py
-```
-
-This shows a simple usage of the freshness checker API.
-
-### Maven-specific Example
-
-```bash
-python examples/maven_example.py
-```
-
-This demonstrates how the freshness checker works specifically with Maven packages, including:
-- The structure of maven-metadata.xml files
-- How lastUpdated dates are extracted
-- Handling of Nexus vs. Cloudsmith dates for Maven packages
-
-## Implementation Guide
-
-To help you implement this solution in your environment, we've provided an implementation guide:
-
-```bash
-python implementation_guide.py
-```
-
-This guide provides step-by-step instructions for:
-- Configuring your environment
-- Tagging packages cached from Nexus
-- Integrating the freshness checker into your workflow
-- Running the freshness check
-- Interpreting the results
-
-## Testing
-
-Run the tests to ensure everything is working properly:
-
-```bash
-python -m pytest test_freshness_checker.py
-```
 
 ## Implementation Details
 
@@ -124,18 +67,17 @@ The `NexusClient` class provides functionality to:
 - List all Maven package groups in Nexus
 - Retrieve the `lastUpdated` date from maven-metadata.xml for each package group
 
-For testing purposes, it uses mocked data. In a production implementation, it would parse the HTML index or use the Nexus API.
+Data from `NexusClient` is mocked in `./fixtures/{format}/packages.json`. This is a showcase implementation. In a production implementation, Indeed would replace it by existing script that parses the HTML index
 
 ### Cloudsmith Client
 
 The `CloudsmithClient` class provides functionality to:
-- List all Maven package groups in Cloudsmith
-- Retrieve the `uploadedAt` date for each package group, with the ability to exclude packages with specific tags
+- `get_last_updated_date` method - Retrieves the `last_pust` (`uploadedAt`) date for each package group (versionless package), with the ability to exclude packages with specific tags. e.g. This can give you last push date for a package group `com.google.guava:guava` for a group of packages only pushed to Cloudsmith (excluding the ones cached from Nexus upstream)
+- `list_package_groups` method - List all unique package groups (versionless package) in Cloudsmith per format (maven, npm, python)
 
 ### Freshness Calculation
 
 For each package group, the script:
-1. Retrieves the lastUpdated date from Nexus (if available)
-2. Retrieves the uploadedAt date from Cloudsmith (if available), excluding packages with specified tags
+1. Retrieves the lastUpdated date from Nexus
+2. Retrieves the uploadedAt date from Cloudsmith (if available), excluding packages with specified upstream nexus tag
 3. Takes the later of the two dates as the true freshness date
-

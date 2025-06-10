@@ -14,11 +14,7 @@ else
   source venv/bin/activate
 fi
 
-# Run the example
-echo "Running the package freshness example..."
-python examples/usage_example.py
-
-# Run the main script with some options
+# Run the main script
 echo ""
 echo "Running the full package freshness checker..."
 python freshness_checker.py
