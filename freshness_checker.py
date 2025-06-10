@@ -323,9 +323,7 @@ def main():
 
             # Step 4: Pick older of the 2 dates
             logger.info("Step 4: Comparing dates and selecting the older one")
-            freshness_date, date_source = compare_dates(nexus_date, cloudsmith_date)
-
-            
+            freshness_date, date_source = compare_dates(nexus_date, cloudsmith_date)            
             
             logger.info(f"Freshness date for {pkg_name}: {format_date_for_display(freshness_date)} (from {date_source})")
             
